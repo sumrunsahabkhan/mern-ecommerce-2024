@@ -1,5 +1,6 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+const BASE_URL = process.env.BASE_URL || process.env.REACT_APP_BASE_URL || "http://44.192.84.103:5000";
 
 const initialState = {
   approvalURL: null,
@@ -9,55 +10,25 @@ const initialState = {
   orderDetails: null,
 };
 
-export const createNewOrder = createAsyncThunk(
-  "/order/createNewOrder",
-  async (orderData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/create",
-      orderData
-    );
+export const createOrder = createAsyncThunk("/order/create", async (orderData) => {
+  const response = await axios.post(`${BASE_URL}/api/shop/order/create`, orderData);
+  return response.data;
+});
 
-    return response.data;
-  }
-);
+export const captureOrder = createAsyncThunk("/order/capture", async ({ paymentId, payerId, orderId }) => {
+  const response = await axios.post(`${BASE_URL}/api/shop/order/capture`, { paymentId, payerId, orderId });
+  return response.data;
+});
 
-export const capturePayment = createAsyncThunk(
-  "/order/capturePayment",
-  async ({ paymentId, payerId, orderId }) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/capture",
-      {
-        paymentId,
-        payerId,
-        orderId,
-      }
-    );
+export const listOrders = createAsyncThunk("/order/list", async (userId) => {
+  const response = await axios.get(`${BASE_URL}/api/shop/order/list/${userId}`);
+  return response.data;
+});
 
-    return response.data;
-  }
-);
-
-export const getAllOrdersByUserId = createAsyncThunk(
-  "/order/getAllOrdersByUserId",
-  async (userId) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/order/list/${userId}`
-    );
-
-    return response.data;
-  }
-);
-
-export const getOrderDetails = createAsyncThunk(
-  "/order/getOrderDetails",
-  async (id) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/order/details/${id}`
-    );
-
-    return response.data;
-  }
-);
+export const getOrderDetails = createAsyncThunk("/order/details", async (id) => {
+  const response = await axios.get(`${BASE_URL}/api/shop/order/details/${id}`);
+  return response.data;
+});
 
 const shoppingOrderSlice = createSlice({
   name: "shoppingOrderSlice",
@@ -69,10 +40,10 @@ const shoppingOrderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createNewOrder.pending, (state) => {
+      .addCase(createOrder.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createNewOrder.fulfilled, (state, action) => {
+      .addCase(createOrder.fulfilled, (state, action) => {
         state.isLoading = false;
         state.approvalURL = action.payload.approvalURL;
         state.orderId = action.payload.orderId;
@@ -81,19 +52,19 @@ const shoppingOrderSlice = createSlice({
           JSON.stringify(action.payload.orderId)
         );
       })
-      .addCase(createNewOrder.rejected, (state) => {
+      .addCase(createOrder.rejected, (state) => {
         state.isLoading = false;
         state.approvalURL = null;
         state.orderId = null;
       })
-      .addCase(getAllOrdersByUserId.pending, (state) => {
+      .addCase(listOrders.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getAllOrdersByUserId.fulfilled, (state, action) => {
+      .addCase(listOrders.fulfilled, (state, action) => {
         state.isLoading = false;
         state.orderList = action.payload.data;
       })
-      .addCase(getAllOrdersByUserId.rejected, (state) => {
+      .addCase(listOrders.rejected, (state) => {
         state.isLoading = false;
         state.orderList = [];
       })

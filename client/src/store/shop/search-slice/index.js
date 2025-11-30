@@ -1,18 +1,16 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+const BASE_URL = process.env.BASE_URL || process.env.REACT_APP_BASE_URL || "http://44.192.84.103:5000";
 
 const initialState = {
   isLoading: false,
   searchResults: [],
 };
 
-export const getSearchResults = createAsyncThunk(
-  "/order/getSearchResults",
+export const searchProducts = createAsyncThunk(
+  "/shop/search",
   async (keyword) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/search/${keyword}`
-    );
-
+    const response = await axios.get(`${BASE_URL}/api/shop/search/${keyword}`);
     return response.data;
   }
 );
@@ -27,14 +25,14 @@ const searchSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getSearchResults.pending, (state) => {
+      .addCase(searchProducts.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getSearchResults.fulfilled, (state, action) => {
+      .addCase(searchProducts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.searchResults = action.payload.data;
       })
-      .addCase(getSearchResults.rejected, (state) => {
+      .addCase(searchProducts.rejected, (state) => {
         state.isLoading = false;
         state.searchResults = [];
       });

@@ -1,5 +1,6 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+const BASE_URL = process.env.BASE_URL || process.env.REACT_APP_BASE_URL || "http://44.192.84.103:5000";
 
 const initialState = {
   isLoading: false,
@@ -35,6 +36,22 @@ export const fetchProductDetails = createAsyncThunk(
     );
 
     return result?.data;
+  }
+);
+
+export const fetchProducts = createAsyncThunk(
+  "/shop/products/get",
+  async (query) => {
+    const result = await axios.get(`${BASE_URL}/api/shop/products/get?${query}`);
+    return result.data;
+  }
+);
+
+export const fetchProductById = createAsyncThunk(
+  "/shop/product/get",
+  async (id) => {
+    const result = await axios.get(`${BASE_URL}/api/shop/products/get/${id}`);
+    return result.data;
   }
 );
 
