@@ -35,17 +35,6 @@ export const getCart = createAsyncThunk(
   }
 );
 
-export const removeFromCart = createAsyncThunk(
-  "/cart/remove",
-  async ({ userId, productId }) => {
-    const response = await axios.delete(
-      `${BASE_URL}/api/shop/cart/${userId}/${productId}`
-    );
-
-    return response.data;
-  }
-);
-
 export const updateCart = createAsyncThunk(
   "/cart/update",
   async ({ userId, productId, quantity }) => {
@@ -61,6 +50,20 @@ export const updateCart = createAsyncThunk(
     return response.data;
   }
 );
+
+export const removeFromCart = createAsyncThunk(
+  "/cart/remove",
+  async ({ userId, productId }) => {
+    const response = await axios.delete(
+      `${BASE_URL}/api/shop/cart/${userId}/${productId}`
+    );
+
+    return response.data;
+  }
+);
+
+// add aliases expected by components
+export { removeFromCart as deleteCartItem, updateCart as updateCartQuantity };
 
 const shoppingCartSlice = createSlice({
   name: "shoppingCart",
