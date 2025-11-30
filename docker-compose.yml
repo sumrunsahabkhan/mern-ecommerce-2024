@@ -18,6 +18,8 @@ services:
       - server
     networks:
       - app-network
+    env_file:
+      - ./client/.env      
 
   nginx:
     image: nginx:alpine
